@@ -27,7 +27,7 @@ jobs:
           cache: "maven"
       - name: Build distribution tar
         run: |
-          mvn -Prelease-all -DskipTests -Dspotbugs.skip=true clean deploy -U
+          mvn -Prelease-all -DskipTests  clean deploy -U
       - uses: actions/upload-artifact@v3
         name: Upload distribution tar
         with:
