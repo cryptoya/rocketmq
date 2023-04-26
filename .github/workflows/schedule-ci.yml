@@ -1,0 +1,38 @@
+name: PUSH-CI
+
+on:
+  push:
+    branches: [master, develop]
+  schedule:
+    - cron: "0 18 * * *" # TimeZone: UTC 0
+
+concurrency:
+  group: rocketmq-${{ github.ref }}
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+  DOCKER_REPO: apache/rocketmq-ci
+
+jobs:
+  dist-tar:
+    name: Build dist tar
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "8"
+          cache: "maven"
+      - name: Build distribution tar
+        run: |
+          mvn -Prelease-all -DskipTests -Dspotbugs.skip=true clean deploy -U
+      - uses: actions/upload-artifact@v3
+        name: Upload distribution tar
+        with:
+          name: rocketmq
+          path: distribution/target/rocketmq*/rocketmq*
+
