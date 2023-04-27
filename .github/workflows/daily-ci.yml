@@ -28,7 +28,7 @@ jobs:
           java-version: "8"
           cache: "maven"
       - name: Show Latest Commit ID
-        run:
+        run: |
           echo "Latest commit ID: ${{ github.sha }}"
       - name: Show Current Time
         run: |
