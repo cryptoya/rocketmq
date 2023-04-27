@@ -28,6 +28,16 @@
             <username>${env.NEXUS_DEPLOY_USERNAME}</username>
             <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
         </server>
+<!--        <server>-->
+<!--            <id>rdc-releases</id>-->
+<!--            <username>${env.NEXUS_DEPLOY_USERNAME}</username>-->
+<!--            <password>${env.NEXUS_DEPLOY_USERNAME}</password>-->
+<!--        </server>-->
+        <server>
+            <id>rdc-snapshots</id>
+            <username>${env.ALIYUN_DEPLOY_USERNAME}</username>
+            <password>${env.ALIYUN_DEPLOY_PASSWORD}</password>
+        </server>
     </servers>
 
 </settings>

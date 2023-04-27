@@ -11,6 +11,7 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
   DOCKER_REPO: apache/rocketmq-ci
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
+  PROJECT_VERSION: 5.1.1-$(date +%Y-%m-%d %H:%M:%S)-${{ github.sha }}-SNAPSHOT
 
 jobs:
   dist-tar:
@@ -26,9 +27,18 @@ jobs:
           distribution: "temurin"
           java-version: "8"
           cache: "maven"
+      - name: Show Latest Commit ID
+        run:
+          echo "Latest commit ID: ${{ github.sha }}"
+      - name: Show Current Time
+        run: |
+          echo "Current time: $(date +%Y-%m-%d %H:%M:%S) UTC"
+      - name: Update pom version
+        run: |
+          mvn versions:set -DnewVersion=${{ env.PROJECT_VERSION }}
       - name: Build distribution tar
         run: |
-          mvn -Prelease-all -DskipTests  clean deploy -U
+          mvn clean -Prelease-all install org.apache.maven.plugins:maven-deploy-plugin:2.8:deploy -Dspotbugs.skip=true -DskipTests -s $GITHUB_WORKSPACE/.github/asf-deploy-settings.xml   -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
       - uses: actions/upload-artifact@v3
         name: Upload distribution tar
         with:
