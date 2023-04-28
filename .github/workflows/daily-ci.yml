@@ -12,6 +12,8 @@ env:
   DOCKER_REPO: apache/rocketmq-ci
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
   PROJECT_VERSION: 5.1.1-$(date -u +"%Y%m%d")-${{ github.sha }}-SNAPSHOT
+  ALIYUN_DEPLOY_USERNAME: ${{ secrets.ALIYUN_DEPLOY_USERNAME }}
+  ALIYUN_DEPLOY_PASSWORD: ${{ secrets.ALIYUN_DEPLOY_PASSWORD }}
 
 jobs:
   dist-tar:
