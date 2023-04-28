@@ -11,7 +11,7 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
   DOCKER_REPO: apache/rocketmq-ci
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
-  PROJECT_VERSION: 5.1.1-$(date +%Y-%m-%d %H:%M:%S)-${{ github.sha }}-SNAPSHOT
+  PROJECT_VERSION: 5.1.1-$(date -u +"%Y%m%d")-${{ github.sha }}-SNAPSHOT
 
 jobs:
   dist-tar:
@@ -30,9 +30,9 @@ jobs:
       - name: Show Latest Commit ID
         run: |
           echo "Latest commit ID: ${{ github.sha }}"
-      - name: Show Current Time
+      - name: Use current timestamp
         run: |
-          echo "Current time: $(date +%Y-%m-%d %H:%M:%S) UTC"
+          echo "Current time: $(date -d @${{ steps.timestamp.outputs.timestamp }})"
       - name: Update pom version
         run: |
           mvn versions:set -DnewVersion=${{ env.PROJECT_VERSION }}
