@@ -11,7 +11,7 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
   DOCKER_REPO: apache/rocketmq-ci
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
-  PROJECT_VERSION: 5.1.1-$(date -u +"%Y%m%d")-${{ github.sha }}-SNAPSHOT
+  PROJECT_VERSION: $(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)-$(date -u +"%Y%m%d")-${{ github.sha:0:7 }}-SNAPSHOT
   ALIYUN_DEPLOY_USERNAME: ${{ secrets.ALIYUN_DEPLOY_USERNAME }}
   ALIYUN_DEPLOY_PASSWORD: ${{ secrets.ALIYUN_DEPLOY_PASSWORD }}
 
@@ -32,9 +32,6 @@ jobs:
       - name: Show Latest Commit ID
         run: |
           echo "Latest commit ID: ${{ github.sha }}"
-      - name: Use current timestamp
-        run: |
-          echo "Current time: $(date -d @${{ steps.timestamp.outputs.timestamp }})"
       - name: Update pom version
         run: |
           mvn versions:set -DnewVersion=${{ env.PROJECT_VERSION }}
