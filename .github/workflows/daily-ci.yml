@@ -24,6 +24,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Deploy to Maven Central
+        env:
+          MAVEN_SETTINGS: ${{ github.workspace }}/.github/asf-deploy-settings.xml
       - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
@@ -34,7 +37,7 @@ jobs:
           mvn versions:set -DnewVersion=${{ env.PROJECT_VERSION }}
       - name: Build distribution tar
         run: |
-          mvn -Prelease-all -DskipTests -Dspotbugs.skip=true install
+          mvn -Prelease-all -DskipTests -Dspotbugs.skip=true install -s $MAVEN_SETTINGS
       - uses: actions/upload-artifact@v3
         name: Upload distribution tar
         with:
@@ -50,12 +53,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Deploy to Maven Central
+        env:
+          MAVEN_SETTINGS: ${{ github.workspace }}/.github/asf-deploy-settings.xml
       - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "8"
           cache: "maven"
       - name: Build distribution tar
-        run: mvn deploy -DskipTests=true -s .github/asf-deploy-settings.xml -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
-        env:
-          MAVEN_OPTS: -Dmaven.repo.local=${{ github.workspace }}/repository
+        run: mvn deploy -DskipTests=true -s $MAVEN_SETTINGS -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
