@@ -29,18 +29,28 @@ jobs:
           distribution: "temurin"
           java-version: "8"
           cache: "maven"
-      - name: Show Latest Commit ID
-        run: |
-          echo "Latest commit ID: ${{ github.sha }}"
       - name: Update pom version
         run: |
           mvn versions:set -DnewVersion=${{ env.PROJECT_VERSION }}
       - name: Build distribution tar
         run: |
-          mvn clean -Prelease-all install org.apache.maven.plugins:maven-deploy-plugin:2.8:deploy -Dspotbugs.skip=true -DskipTests -s .github/asf-deploy-settings.xml -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
+          mvn -Prelease-all -DskipTests -Dspotbugs.skip=true clean install
       - uses: actions/upload-artifact@v3
         name: Upload distribution tar
         with:
           name: rocketmq
           path: distribution/target/rocketmq*/rocketmq*
 
+  maven-deploy:
+    name: Update to remote maven repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "8"
+          cache: "maven"
+      - name: Build distribution tar
+        run: |
+          mvn deploy -DskipTests=true -s .github/asf-deploy-settings.xml -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
