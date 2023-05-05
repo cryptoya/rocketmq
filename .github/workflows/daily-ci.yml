@@ -43,6 +43,7 @@ jobs:
 
   maven-deploy:
     name: Update to remote maven repository
+    needs: [dist-tar]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
