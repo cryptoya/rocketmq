@@ -29,6 +29,9 @@ jobs:
           distribution: "temurin"
           java-version: "8"
           cache: "maven"
+      - name: Update pom version
+        run: |
+          mvn versions:set -DnewVersion=${{ env.PROJECT_VERSION }}
       - name: Build distribution tar
         env:
           MAVEN_SETTINGS: ${{ github.workspace }}/.github/asf-deploy-settings.xml
@@ -39,6 +42,7 @@ jobs:
         with:
           name: rocketmq
           path: distribution/target/rocketmq*/rocketmq*
+
 
   maven-deploy:
     name: Update to remote maven repository
