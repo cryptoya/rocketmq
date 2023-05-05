@@ -137,7 +137,7 @@ jobs:
             proxy:
               image:
                 repository: ${{env.DOCKER_REPO}}
-                tag: ${{ matrix.version }}
+                tag: ${{ matrix.version }} 
 
   e2e-test:
     if: ${{ success() }}
