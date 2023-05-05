@@ -60,4 +60,4 @@ jobs:
       - name: Build distribution tar
         env:
           MAVEN_SETTINGS: ${{ github.workspace }}/.github/asf-deploy-settings.xml
-        run: mvn deploy -DskipTests=true -s $MAVEN_SETTINGS -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
+        run: mvn deploy -DskipTests=true -Dspotbugs.skip=true -s $MAVEN_SETTINGS -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
