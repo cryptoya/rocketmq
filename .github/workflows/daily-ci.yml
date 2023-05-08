@@ -12,7 +12,7 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
   DOCKER_REPO: zychen143/rocketmq
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
-  PROJECT_VERSION: $(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)-$(date -u +"%Y%m%d")-$(git rev-parse --short HEAD)-SNAPSHOT
+  PROJECT_VERSION: VERSION=$(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
   ALIYUN_DEPLOY_USERNAME: ${{ secrets.ALIYUN_DEPLOY_USERNAME }}
   ALIYUN_DEPLOY_PASSWORD: ${{ secrets.ALIYUN_DEPLOY_PASSWORD }}
 
@@ -32,8 +32,7 @@ jobs:
           cache: "maven"
       - name: Update pom version
         run: |
-          VERSION=$(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
-          VERSION=$(echo $VERSION | awk -F '-SNAPSHOT' '{print $1}')
+          VERSION=$(echo $PROJECT_VERSION | awk -F '-SNAPSHOT' '{print $1}')
           VERSION=$VERSION-$(date -u +"%Y%m%d")-$(git rev-parse --short HEAD)-SNAPSHOT
           mvn versions:set -DnewVersion=$VERSION
       - name: Build distribution tar
@@ -179,27 +178,29 @@ jobs:
 #          name: testlog.txt
 #          path: testlog.txt
 
-#  maven-deploy:
-#    name: Update to remote maven repository
-#    needs: [e2e-test]
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 30
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          submodules: true
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: "temurin"
-#          java-version: "8"
-#          cache: "maven"
-#      - name: Update pom version
-#        run: |
-#          mvn versions:set -DnewVersion=${{ env.PROJECT_VERSION }}
-#      - name: Build distribution tar
-#        env:
-#          MAVEN_SETTINGS: ${{ github.workspace }}/.github/asf-deploy-settings.xml
-#        run: mvn deploy -DskipTests=true -Dspotbugs.skip=true -s $MAVEN_SETTINGS -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
+  maven-deploy:
+    name: Update to remote maven repository
+    needs: [e2e-test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "8"
+          cache: "maven"
+      - name: Update pom version
+        run: |
+          VERSION=$(echo $PROJECT_VERSION | awk -F '-SNAPSHOT' '{print $1}')
+          VERSION=$VERSION-$(date -u +"%Y%m%d")-$(git rev-parse --short HEAD)-SNAPSHOT
+          mvn versions:set -DnewVersion=$VERSION
+      - name: Build distribution tar
+        env:
+          MAVEN_SETTINGS: ${{ github.workspace }}/.github/asf-deploy-settings.xml
+        run: mvn deploy -DskipTests=true -Dspotbugs.skip=true -s $MAVEN_SETTINGS -DaltDeploymentRepository=rdc-snapshots::default::https://packages.aliyun.com/maven/repository/2370427-snapshot-NKfrhH/
 
 #  clean:
 #    if: always()
