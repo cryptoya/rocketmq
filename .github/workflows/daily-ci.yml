@@ -12,7 +12,7 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
   DOCKER_REPO: zychen143/rocketmq
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
-  PROJECT_VERSION: VERSION=$(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
+  PROJECT_VERSION: $(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
   ALIYUN_DEPLOY_USERNAME: ${{ secrets.ALIYUN_DEPLOY_USERNAME }}
   ALIYUN_DEPLOY_PASSWORD: ${{ secrets.ALIYUN_DEPLOY_PASSWORD }}
 
