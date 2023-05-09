@@ -12,7 +12,6 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
   DOCKER_REPO: zychen143/rocketmq
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
-  PROJECT_VERSION: $(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
   ALIYUN_DEPLOY_USERNAME: ${{ secrets.ALIYUN_DEPLOY_USERNAME }}
   ALIYUN_DEPLOY_PASSWORD: ${{ secrets.ALIYUN_DEPLOY_PASSWORD }}
 
@@ -32,7 +31,8 @@ jobs:
           cache: "maven"
       - name: Update pom version
         run: |
-          VERSION=$(echo $PROJECT_VERSION | awk -F '-SNAPSHOT' '{print $1}')
+          VERSION=$(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
+          VERSION=$(echo $VERSION | awk -F '-SNAPSHOT' '{print $1}')
           VERSION=$VERSION-$(date -u +"%Y%m%d")-$(git rev-parse --short HEAD)-SNAPSHOT
           mvn versions:set -DnewVersion=$VERSION
       - name: Build distribution tar
@@ -194,7 +194,8 @@ jobs:
           cache: "maven"
       - name: Update pom version
         run: |
-          VERSION=$(echo $PROJECT_VERSION | awk -F '-SNAPSHOT' '{print $1}')
+          VERSION=$(mvn -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)
+          VERSION=$(echo $VERSION | awk -F '-SNAPSHOT' '{print $1}')
           VERSION=$VERSION-$(date -u +"%Y%m%d")-$(git rev-parse --short HEAD)-SNAPSHOT
           mvn versions:set -DnewVersion=$VERSION
       - name: Build distribution tar
