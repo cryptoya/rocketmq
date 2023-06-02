@@ -38,10 +38,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
+      - name: Step 1
+        run: echo ${{ github.event.inputs.branch }}/${{ github.event.inputs.commit_id || github.sha }}
+      - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.branch }}/${{ github.event.inputs.commit_id || github.sha }}
-          submodules: true
       - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
