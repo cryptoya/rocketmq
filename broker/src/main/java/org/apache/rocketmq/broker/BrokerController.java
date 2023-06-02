@@ -646,8 +646,11 @@ public class BrokerController {
                                 BrokerController.this.getSlaveSynchronize().syncAll();
                                 lastSyncTimeMs = System.currentTimeMillis();
                             }
+                            
                             //timer checkpoint, latency-sensitive, so sync it more frequently
-                            BrokerController.this.getSlaveSynchronize().syncTimerCheckPoint();
+                            if (messageStoreConfig.isTimerWheelEnable()) {
+                                BrokerController.this.getSlaveSynchronize().syncTimerCheckPoint();
+                            }
                         } catch (Throwable e) {
                             LOG.error("Failed to sync all config for slave.", e);
                         }
@@ -763,6 +766,11 @@ public class BrokerController {
                 LOG.error("BrokerController#initialize: unexpected error occurs", e);
             }
         }
+
+        if (this.brokerConfig.isEnableControllerMode()) {
+            this.replicasManager.setFenced(true);
+        }
+
         if (messageStore != null) {
             registerMessageStoreHook();
             result = result && this.messageStore.load();
@@ -1283,7 +1291,7 @@ public class BrokerController {
         }
 
         if (this.notificationProcessor != null) {
-            this.notificationProcessor.shutdown();
+            this.notificationProcessor.getPopLongPollingService().shutdown();
         }
 
         if (this.consumerIdsChangeListener != null) {
@@ -1502,6 +1510,10 @@ public class BrokerController {
             this.ackMessageProcessor.startPopReviveService();
         }
 
+        if (this.notificationProcessor != null) {
+            this.notificationProcessor.getPopLongPollingService().start();
+        }
+
         if (this.topicQueueMappingCleanService != null) {
             this.topicQueueMappingCleanService.start();
         }
@@ -1554,10 +1566,6 @@ public class BrokerController {
 
         if (messageStoreConfig.getTotalReplicas() > 1 && this.brokerConfig.isEnableSlaveActingMaster()) {
             isIsolated = true;
-        }
-
-        if (this.brokerConfig.isEnableControllerMode()) {
-            this.replicasManager.setIsolatedAndBrokerPermission(false);
         }
 
         if (this.brokerOuterAPI != null) {

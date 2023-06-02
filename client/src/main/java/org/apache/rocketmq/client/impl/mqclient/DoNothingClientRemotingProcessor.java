@@ -14,29 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.rocketmq.client.impl.mqclient;
 
-package org.apache.rocketmq.client.common;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.rocketmq.client.impl.ClientRemotingProcessor;
+import org.apache.rocketmq.client.impl.factory.MQClientInstance;
+import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
-import java.util.Random;
+public class DoNothingClientRemotingProcessor extends ClientRemotingProcessor {
 
-public class ThreadLocalIndex {
-    private final ThreadLocal<Integer> threadLocalIndex = new ThreadLocal<>();
-    private final Random random = new Random();
-    private final static int POSITIVE_MASK = 0x7FFFFFFF;
-
-    public int incrementAndGet() {
-        Integer index = this.threadLocalIndex.get();
-        if (null == index) {
-            index = random.nextInt();
-        }
-        this.threadLocalIndex.set(++index);
-        return index & POSITIVE_MASK;
+    public DoNothingClientRemotingProcessor(MQClientInstance mqClientFactory) {
+        super(mqClientFactory);
     }
 
     @Override
-    public String toString() {
-        return "ThreadLocalIndex{" +
-            "threadLocalIndex=" + threadLocalIndex.get() +
-            '}';
+    public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request) {
+        return null;
     }
 }
