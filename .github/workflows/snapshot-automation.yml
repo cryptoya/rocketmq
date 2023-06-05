@@ -21,10 +21,10 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'The branch to trigger the workflow'
+        description: 'The branch to trigger the workflow, default is develop. Do not set branch and commit_id together'
         required: false
       commit_id:
-        description: 'The commit id to trigger the workflow'
+        description: 'The commit id to trigger the workflow. Do not set branch and commit_id together'
         required: false
 
 env:
@@ -54,15 +54,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.branch }}
-
-      - name: Checkout specific commit and branch
-        if: github.event.inputs.branch != '' && github.event.inputs.commit_id != ''
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.branch }}
-      - name: Checkout specific commit and branch Step 2
-        if: github.event.inputs.branch != '' && github.event.inputs.commit_id != ''
-        run: git checkout ${{ github.event.inputs.commit_id }}
 
       - uses: actions/setup-java@v3
         with:
