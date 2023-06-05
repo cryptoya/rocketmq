@@ -36,10 +36,7 @@ jobs:
     name: Build dist tar
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.event.inputs.branch == '' && github.event.inputs.commit_id != ''
     steps:
-      - name: Step 1
-        run: echo ${{ github.event.inputs.branch }}/${{ github.event.inputs.commit_id || github.sha }}
       - name: Checkout develop
         if: github.event.inputs.branch == '' && github.event.inputs.commit_id == ''
         uses: actions/checkout@v2
