@@ -22,8 +22,7 @@ on:
     inputs:
       branch:
         description: 'The branch to trigger the workflow'
-        required: true
-        default: 'develop'
+        required: false
       commit_id:
         description: 'The commit id to trigger the workflow'
         required: false
@@ -37,12 +36,40 @@ jobs:
     name: Build dist tar
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: github.event.inputs.branch == '' && github.event.inputs.commit_id != ''
     steps:
       - name: Step 1
         run: echo ${{ github.event.inputs.branch }}/${{ github.event.inputs.commit_id || github.sha }}
-      - uses: actions/checkout@v2
+      - name: Checkout develop
+        if: github.event.inputs.branch == '' && github.event.inputs.commit_id == ''
+        uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.commit_id || github.sha }}
+          ref: develop
+
+      - name: Checkout specific commit
+        if: github.event.inputs.branch == '' && github.event.inputs.commit_id != ''
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.commit_id }}
+
+      - name: Checkout specific branch
+        if: github.event.inputs.branch != '' && github.event.inputs.commit_id == ''
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Checkout specific commit and branch
+        if: github.event.inputs.branch != '' && github.event.inputs.commit_id != ''
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+      - name: Checkout specific commit and branch Step 2
+        if: github.event.inputs.branch != '' && github.event.inputs.commit_id != ''
+        run: git checkout ${GITHUB_SHA}
+
+#      - uses: actions/checkout@v2
+#        with:
+#          ref: ${{ github.event.inputs.commit_id || github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
