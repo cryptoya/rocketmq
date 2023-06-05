@@ -42,7 +42,7 @@ jobs:
         run: echo ${{ github.event.inputs.branch }}/${{ github.event.inputs.commit_id || github.sha }}
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: ${{ github.event.inputs.commit_id || github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
