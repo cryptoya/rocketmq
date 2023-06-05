@@ -64,9 +64,6 @@ jobs:
         if: github.event.inputs.branch != '' && github.event.inputs.commit_id != ''
         run: git checkout ${GITHUB_SHA}
 
-#      - uses: actions/checkout@v2
-#        with:
-#          ref: ${{ github.event.inputs.commit_id || github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: "temurin"
