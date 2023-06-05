@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'The branch to trigger the workflow, default branch is develop'
+        description: 'The branch to trigger the workflow, The default branch is "develop" when both branch and commit_id are empty'
         required: false
       commit_id:
         description: 'The commit id to trigger the workflow. Do not set branch and commit_id together'
