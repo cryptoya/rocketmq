@@ -62,7 +62,7 @@ jobs:
           ref: ${{ github.event.inputs.branch }}
       - name: Checkout specific commit and branch Step 2
         if: github.event.inputs.branch != '' && github.event.inputs.commit_id != ''
-        run: git checkout ${GITHUB_SHA}
+        run: git checkout ${{ github.event.inputs.commit_id }}
 
       - uses: actions/setup-java@v3
         with:
